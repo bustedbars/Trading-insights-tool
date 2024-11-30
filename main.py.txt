@@ -1,0 +1,88 @@
+
+import pandas as pd
+import numpy as np
+
+# Your powerful algorithm (simplified for the example)
+def powerful_algorithm(data):
+    """
+    This algorithm performs powerful data analysis with a computational complexity of O(N^3).
+    It processes the price data to generate deeper insights and trading decisions.
+    
+    Arguments:
+    - data (pd.DataFrame): Historical trading data with 'Price' and 'Volume' columns
+    
+    Returns:
+    - pd.DataFrame: A DataFrame with enhanced trading insights and decisions
+    """
+    # Example of a cubic complexity calculation on the price data (O = N^3 complexity)
+    n = len(data)
+    result = np.zeros(n)
+
+    # This is just a placeholder for the complex O(N^3) computation (e.g., matrix operations)
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                result[i] += (data['Price'].iloc[i] * data['Price'].iloc[j] * data['Price'].iloc[k])  # Simplified cubic operation
+    
+    # Normalize the result to make it usable (just for illustration)
+    data['Powerful_Insight'] = result / np.max(result)
+
+    return data
+
+# Trading insights algorithm combining your powerful algorithm
+def calculate_trading_insights(data):
+    """
+    Given a DataFrame with trading data, this function calculates several insights,
+    such as moving averages, volatility, trading decisions, and your algorithm’s insights.
+    
+    Arguments:
+    - data (pd.DataFrame): Historical trading data with 'Price' and 'Volume' columns
+    
+    Returns:
+    - pd.DataFrame: A DataFrame with enhanced trading insights, including signals from your algorithm
+    """
+    # Calculate 7-day moving average
+    data['7_day_MA'] = data['Price'].rolling(window=7).mean()
+
+    # Calculate 30-day moving average
+    data['30_day_MA'] = data['Price'].rolling(window=30).mean()
+
+    # Calculate standard deviation over the last 14 days for volatility
+    data['14_day_volatility'] = data['Price'].rolling(window=14).std()
+
+    # Run your powerful algorithm to get deeper insights
+    data = powerful_algorithm(data)
+
+    # Simple moving average crossover strategy: Buy when 7-day MA crosses above 30-day MA
+    data['Signal'] = 0  # Default: No action
+    data.loc[data['7_day_MA'] > data['30_day_MA'], 'Signal'] = 1  # Buy signal
+
+    # Sell signal: When 7-day MA crosses below 30-day MA
+    data.loc[data['7_day_MA'] < data['30_day_MA'], 'Signal'] = -1  # Sell signal
+
+    # Decision to Buy/Sell based on the Signal
+    data['Decision'] = np.where(data['Signal'] == 1, 'Buy',
+                                np.where(data['Signal'] == -1, 'Sell', 'Hold'))
+
+    # Calculate the moving average of the volume (trading activity)
+    data['Volume_MA'] = data['Volume'].rolling(window=10).mean()
+
+    return data
+
+# Example usage of the function
+if __name__ == "__main__":
+    # Example data: Simulating historical prices and volumes
+    data = pd.DataFrame({
+        'Date': pd.date_range(start='2024-01-01', periods=100),
+        'Price': np.random.rand(100) * 100,  # Simulated price data
+        'Volume': np.random.randint(100, 1000, size=100)  # Simulated volume data
+    })
+
+    # Set Date as the index for time-series analysis
+    data.set_index('Date', inplace=True)
+
+    # Call the function to calculate trading insights
+    insights = calculate_trading_insights(data)
+
+    # Print the resulting DataFrame with insights
+    print(insights.tail())
